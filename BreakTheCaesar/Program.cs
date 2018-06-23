@@ -51,7 +51,8 @@ namespace BreakTheCaesar
         public int[] EncodeNumbers(int[] numbers, int shift)
         {
             int[] codedNumbers = new int[numbers.Length];
-            for (int i = 0; i < numbers.Length; i++)
+            var t = numbers.Length;
+            for (int i = 0; i < t; i++)
             {
                 codedNumbers[i] = (numbers[i] + shift) % 26;
             }
@@ -66,39 +67,71 @@ namespace BreakTheCaesar
             char[] word = new char[numbersToEncrypt.Length];
 
             string temp = "";
-            string result = temp;
+            LooPEncryptingWords(encodedNumbers, word);
+            temp = new string(word);
 
+            string result = temp;
+            result = CheckingWhiteSpace(input, temp, result);
+            String finalResult = CheckingPunctuations(result, input);
+            return finalResult;
+        }
+
+        private static string CheckingWhiteSpace(string input, string temp, string result)
+        {
+            for (int j = 0; j < input.Length; j++)
+            {
+                result = AddingWhiteSpace(input, temp, result, j);
+            }
+
+            return result;
+        }
+
+        private static string AddingWhiteSpace(string input, string temp, string result, int j)
+        {
+            if (char.IsWhiteSpace(input[j]))
+            {
+                result = temp.Insert(j, " ");
+            }
+
+            return result;
+        }
+
+        private void LooPEncryptingWords(int[] encodedNumbers, char[] word)
+        {
             for (int i = 0; i < encodedNumbers.Length; i++)
             {
                 word[i] = integersValues[encodedNumbers[i]];
             }
-            temp = new string(word);
-
-            for (int j = 0; j < input.Length; j++)
-            {
-                if (char.IsWhiteSpace(input[j]))
-                {
-                    result = temp.Insert(j, " ");
-                }
-            }
-            String finalResult = CheckingPunctuations(result, input);
-            return finalResult;
         }
 
         public String CheckingPunctuations(string input, string original)
         {
             String result = "";
-            for (int i = 0; i < original.Length; i++)
-            {
-                if (char.IsPunctuation(original[i]))
-                {
-                    result = input.Insert(i, original[i].ToString());
-                }
-            }
-
+            result = PunctuationsPositive(input, original, result);
             if (result.Length == 0)
             {
                 result = input;
+            }
+
+            return result;
+        }
+
+        private static string PunctuationsPositive(string input, string original, string result)
+        {
+            for (int i = 0; i < original.Length; i++)
+            {
+                bool condition = char.IsPunctuation(original[i]);
+                result = AddingPunctuation(input, original, result, i, condition);
+            }
+
+            return result;
+        }
+
+        private static string AddingPunctuation(string input, string original, string result, int i, bool condition)
+        {
+            if (condition)
+            {
+                result = input.Insert(i, char.ToString(original[i]));
             }
 
             return result;
